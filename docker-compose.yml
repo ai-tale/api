@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - API_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/aitale
+      - SECRET_KEY=dev_secret_key_change_in_production
+    depends_on:
+      - db
+    command: >
+      sh -c "python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=aitale
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data: 
